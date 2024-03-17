@@ -33,8 +33,8 @@ def canny_edge_detector(image, low_threshold=30, high_threshold=50, kernel_size=
     return magnitude
 
 def main(args):
-    image_folder = os.path.join(args.data_directory, args.domain, "images")
-    contour_folder = os.path.join(args.data_directory, args.domain, "contours")
+    image_folder = os.path.join(args.data_directory, args.domain_img_folder)
+    contour_folder = os.path.join(args.data_directory, args.domain_contour_folder)
     os.makedirs(contour_folder, exist_ok=True)
 
     img_name_list = []
@@ -61,14 +61,16 @@ def main(args):
         "contour_name": contour_name_list
     })
 
-    df_meta.to_csv(os.path.join(args.data_directory, args.domain, "df_meta.csv"))    
+    df_meta.to_csv(os.path.join(args.data_directory, args.domain_meta_path))    
 
 if __name__ == "__main__":
     # Parse args:
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--data_directory', type=str, required=True)
-    parser.add_argument('--domain', type=str, required=True)
+    parser.add_argument('--domain_img_folder', type=str, required=True, help="name of the folder containing images from the domain")
+    parser.add_argument('--domain_contour_folder', type=str, required=True, help="name of the folder containing contours from the domain")
+    parser.add_argument('--domain_meta_path', type=str, required=True, help="path of the domain meta under data_directory")
 
     ## Remove non-significant artifacts
     parser.add_argument('--remove_artifact', action='store_true')

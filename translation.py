@@ -47,8 +47,8 @@ def main(args):
     ### Load the meta csv for translation
     ### Note: the code to generate df_translating_meta is not provided
     ### For translating by volume, you may need to add one column describing the volume specificier
-    df_val_meta = pd.read_csv(os.path.join(args.data_directory, args.input_domain, "df_translating_meta.csv"), index_col=0)
-    contour_directory = os.path.join(os.path.join(args.data_directory, args.input_domain, args.input_domain_contour_folder))
+    df_val_meta = pd.read_csv(os.path.join(args.data_directory, input_domain_meta_path), index_col=0)
+    contour_directory = os.path.join(os.path.join(args.data_directory, args.input_domain_contour_folder))
 
     ### Load the checkpoints
     if args.selected_epoch is None:
@@ -296,6 +296,7 @@ if __name__ == "__main__":
     parser.add_argument('--data_directory', type=str, required=True, help="directory of the dataset")
     parser.add_argument('--input_domain', type=str, required=True, help="name of the input domain (e.g. CT)")
     parser.add_argument('--input_domain_contour_folder', type=str, required=True, help="name of the folder which contains the contours extract from the input domain to translate")
+    parser.add_argument('--input_domain_meta_path', type=str, required=True, help="path of input domain meta under data_directory")
     parser.add_argument('--by_volume', action='store_true', help="specify if the translation is performed volume by volume")
     parser.add_argument('--volume_specifier', type=str, default=None, help="column name in the meta csv to contain volume information")
     parser.add_argument('--slice_specifier', type=str, default=None, help="column name in the meta csv to contain the slice information")
