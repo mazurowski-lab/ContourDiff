@@ -19,7 +19,7 @@ class TrainingConfig:
     save_image_epochs: int = 20
     save_model_epochs: int = 20
     mixed_precision: float = 'fp16'  # `no` for float32, `fp16` for automatic mixed precision
-    output_dir: str = f'ContourDiff-{input_domain}-{output_domain}-{model_type}-{dataset}'
+    output_dir: str = None
     
     seed: int = 0
     workers: int = 8

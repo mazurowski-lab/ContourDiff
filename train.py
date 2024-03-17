@@ -50,6 +50,8 @@ def main(args):
     )
     if args.output_dir is not None:
         config.output_dir = args.output_dir
+    else:
+        config.output_dir = f'ContourDiff-{config.input_domain}-{config.output_domain}-{config.model_type}-{config.dataset}'    
 
     ### Load transform for images and contours
     train_transform_img = load_train_transform_img(config)
