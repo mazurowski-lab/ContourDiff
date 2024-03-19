@@ -4,7 +4,7 @@ from torchvision import transforms
 @dataclass
 class TrainingConfig:
     model_type: str = "ddpm"   # "ddpm" or "ddim"
-    dataset: str = "spine_sag"
+    dataset: str = None
     input_domain: str = None
     output_domain: str = None
     img_size: int = 256
@@ -46,7 +46,7 @@ class TrainingConfig:
 @dataclass
 class TranslatingConfig:
     model_type:str = "ddim"
-    dataset: str = "spine_sag"
+    dataset: str = None
     input_domain: str = None
     output_domain: str = None
     eval_batch_size: int = 1
@@ -54,7 +54,7 @@ class TranslatingConfig:
     denoise_step: int = 50
     selected_epoch: int = 1
     in_channels: int = 1
-    output_dir: str = f'ContourDiff-{input_domain}-{output_domain}-{model_type}-{dataset}'
+    output_dir: str = None
 
     seed: int = 0
     workers: int = 8

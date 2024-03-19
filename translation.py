@@ -29,6 +29,7 @@ def main(args):
         dataset=args.dataset,
         img_size=args.img_size,
         input_domain=args.input_domain,
+        output_domain=args.output_domain,
         in_channels=args.in_channels,
         eval_batch_size=args.eval_batch_size,
         denoise_step=args.denoise_step,
@@ -39,6 +40,8 @@ def main(args):
     )
     if args.output_dir is not None:
         config.output_dir = args.output_dir
+    else:
+        config.output_dir = f'ContourDiff-{config.input_domain}-{config.output_domain}-{config.model_type}-{config.dataset}'
 
     ### Load transform for images and contours
     val_transform_img = load_val_transform_img(config)
@@ -47,14 +50,14 @@ def main(args):
     ### Load the meta csv for translation
     ### Note: the code to generate df_translating_meta is not provided
     ### For translating by volume, you may need to add one column describing the volume specificier
-    df_val_meta = pd.read_csv(os.path.join(args.data_directory, input_domain_meta_path), index_col=0)
+    df_val_meta = pd.read_csv(os.path.join(args.data_directory, args.input_domain_meta_path), index_col=0)
     contour_directory = os.path.join(os.path.join(args.data_directory, args.input_domain_contour_folder))
 
     ### Load the checkpoints
     if args.selected_epoch is None:
-        model_dir = os.path.join(args.output_dir, "model", "unet")
+        model_dir = os.path.join(config.output_dir, "model", "unet")
     else:
-        model_dir = os.path.join(args.output_dir, f"model_epoch_{args.selected_epoch}", "unet")
+        model_dir = os.path.join(config.output_dir, f"model_epoch_{args.selected_epoch}", "unet")
     model = UNet2DModel.from_pretrained(model_dir, use_safetensors=True).to(config.device)
 
     if not args.by_volume:
@@ -70,7 +73,7 @@ def main(args):
     generator = torch.manual_seed(config.seed)
 
     ### Create the directory to save the translated images
-    save_directory = os.path.join(config.output_dir, args.translating_folder_name)
+    save_directory = os.path.join(args.translating_folder_name)
     os.makedirs(save_directory, exist_ok=True)
     model.eval()
 
@@ -94,6 +97,7 @@ def main(args):
                 for i, row in df_by_volume.iterrows():
                     not_pass_flag = True
                     attempt = 0
+                    mean_attemp = 0
                     img_buffer = []
                     mean_buffer = []
                     
@@ -156,6 +160,11 @@ def main(args):
                             if mean < args.mean_threshold:
                                 attempt += 1
                                 not_pass_flag = False
+                            else:
+                                mean_attemp += 1
+                                if mean_attemp >= args.max_attempt:
+                                    print("--Warning--")
+                                    print("Exceed maximum attempt! May need to use larger mean_threshold!")
 
                         ### If satisfying the mean requirement, then check the distance requirement if applicable
                         if not_pass_flag == False:
@@ -294,7 +303,8 @@ if __name__ == "__main__":
     parser.add_argument('--selected_epoch', type=int, default=None, help="specifiy the epoch to load the checkpoints")
 
     parser.add_argument('--data_directory', type=str, required=True, help="directory of the dataset")
-    parser.add_argument('--input_domain', type=str, required=True, help="name of the input domain (e.g. CT)")
+    parser.add_argument('--input_domain', type=str, required=True, help="name of the input domain (e.g. CT, any)")
+    parser.add_argument('--output_domain', type=str, required=True, help="name of the output domain (e.g. MRI)")
     parser.add_argument('--input_domain_contour_folder', type=str, required=True, help="name of the folder which contains the contours extract from the input domain to translate")
     parser.add_argument('--input_domain_meta_path', type=str, required=True, help="path of input domain meta under data_directory")
     parser.add_argument('--by_volume', action='store_true', help="specify if the translation is performed volume by volume")
