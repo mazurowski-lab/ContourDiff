@@ -82,7 +82,7 @@ def make_grid(images, rows, cols):
         grid.paste(image, box=(i%cols*w, i//cols*h))
     return grid
 
-def normalize_percentile_to_255(data, lower_percentile=1, upper_percentile=99):
+def normalize_percentile_to_255(data, lower_percentile=0, upper_percentile=100):
     """
     Normalize data based on the specified lower and upper percentiles and scale to [0, 255].
 

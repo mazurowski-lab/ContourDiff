@@ -52,6 +52,7 @@ class TranslatingConfig:
     eval_batch_size: int = 1
     img_size: int = 256
     denoise_step: int = 50
+    training_noise_step: int = 1000
     selected_epoch: int = 1
     in_channels: int = 1
     output_dir: str = None

@@ -14,7 +14,7 @@ from tqdm.autonotebook import tqdm
 from PIL import Image
 
 ## Custom imports
-from utils import normalize_percentile_to_255, add_contours_to_noise
+from utils import normalize_percentile_to_255, add_contours_to_noise, calculate_Distance
 from config import TranslatingConfig
 from transform import *
 
@@ -33,6 +33,7 @@ def main(args):
         in_channels=args.in_channels,
         eval_batch_size=args.eval_batch_size,
         denoise_step=args.denoise_step,
+        training_noise_step=args.training_noise_step,
         seed=args.seed,
         workers=args.workers,
         device=args.device,
@@ -65,9 +66,9 @@ def main(args):
 
     ### Load the scheduler
     if args.model_type == "ddpm":
-        scheduler = DDPMScheduler(num_train_timesteps=args.denoise_step)
+        scheduler = DDPMScheduler(num_train_timesteps=args.training_noise_step)
     elif args.model_type == "ddim":
-        scheduler = DDIMScheduler(num_train_timesteps=args.denoise_step)
+        scheduler = DDIMScheduler(num_train_timesteps=args.training_noise_step)
 
     ### Load the random noise seed generator
     generator = torch.manual_seed(config.seed)
@@ -100,6 +101,7 @@ def main(args):
                     mean_attemp = 0
                     img_buffer = []
                     mean_buffer = []
+                    dist_buffer = []
                     
                     while not_pass_flag:
                         ### Initialize the image as random noise
@@ -158,13 +160,14 @@ def main(args):
                             ### Check if any generated samples with mean value less than a specified value
                             ### Typically, smaller mean values imply qualitatively better samples
                             if mean < args.mean_threshold:
-                                attempt += 1
                                 not_pass_flag = False
                             else:
-                                mean_attemp += 1
                                 if mean_attemp >= args.max_attempt:
                                     print("--Warning--")
                                     print("Exceed maximum attempt! May need to use larger mean_threshold!")
+                                    
+                        attempt += 1
+                        mean_attemp += 1
 
                         ### If satisfying the mean requirement, then check the distance requirement if applicable
                         if not_pass_flag == False:
@@ -178,6 +181,7 @@ def main(args):
                                 if attempt > args.max_attempt:
                                     index = dist_buffer.index(min(dist_buffer))
                                     img = img_buffer[index]
+                                    img = normalize_percentile_to_255(img)
                                     img = Image.fromarray(img)
                                     img.save(os.path.join(save_directory, row["image_name"]))
                                     
@@ -261,7 +265,7 @@ def main(args):
 
                 ### Process output and return the generated images
                 image = (image / 2 + 0.5).clamp(0, 1)
-                image = image.detach().cpu().squeeze().numpy()
+                image = image.detach().cpu().permute(0, 2, 3, 1).numpy()
 
                 ### Select the generated samples with the lowest mean value
                 img_list = []
@@ -276,6 +280,7 @@ def main(args):
                     
                 index = mean_list.index(min(mean_list))
                 img = img_list[index]
+                img = np.squeeze(img)
 
                 ### Save the generated samples
                 img = Image.fromarray(img)
