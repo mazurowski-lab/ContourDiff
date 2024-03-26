@@ -44,7 +44,7 @@ def load_train_transform_contour(config):
 def load_val_transform_img(config):
     return transforms.Compose(
         [
-            transforms.Resize((config.img_size, config.img_size)),
+            transforms.Resize((config.img_size, config.img_size), interpolation=config.img_interpolation),
             transforms.ToTensor(),
             transforms.Normalize([0.5], [0.5]),
         ]
@@ -53,7 +53,7 @@ def load_val_transform_img(config):
 def load_val_transform_contour(config):
     return transforms.Compose(
         [
-            transforms.Resize((config.img_size, config.img_size)),
+            transforms.Resize((config.img_size, config.img_size), interpolation=config.contour_interpolation),
             transforms.Lambda(lambda x: x.point(lambda p: p > 50 and 255)),
             transforms.ToTensor(),
         ]

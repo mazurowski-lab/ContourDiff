@@ -56,6 +56,9 @@ class TranslatingConfig:
     selected_epoch: int = 1
     in_channels: int = 1
     output_dir: str = None
+    
+    img_interpolation = transforms.InterpolationMode.BICUBIC
+    contour_interpolation = transforms.InterpolationMode.NEAREST
 
     seed: int = 0
     workers: int = 8
