@@ -27,7 +27,7 @@ class ContourDiffDataset(Dataset):
 
     def __getitem__(self, index):
         img_name = self.df_meta.iloc[index, :]["image_name"]
-        if self.config.in_channels == 1 or self.config is None:
+        if self.config is None or self.config.in_channels == 1:
             img = Image.open(os.path.join(self.image_directory, img_name)).convert("L")
         elif self.config.in_channels == 3:
             img = Image.open(os.path.join(self.image_directory, img_name)).convert("RGB")
