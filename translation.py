@@ -306,6 +306,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_dir', type=str, default=None, help="directory to save the output samples and checkpoints. If not specified, it will use the default name as ContourDiff-{input_domain}-{output_domain}-{model_type}-{dataset}")
     parser.add_argument('--translating_folder_name', type=str, default="translating_samples", help="name of the folder to save translated images")
     parser.add_argument('--selected_epoch', type=int, default=None, help="specifiy the epoch to load the checkpoints")
+    parser.add_argument('--training_noise_step', type=int, default=1000, help="number of steps used for training the diffusion model")
 
     parser.add_argument('--data_directory', type=str, required=True, help="directory of the dataset")
     parser.add_argument('--input_domain', type=str, required=True, help="name of the input domain (e.g. CT, any)")
