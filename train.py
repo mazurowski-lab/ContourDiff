@@ -42,12 +42,16 @@ def main(args):
         save_model_epochs=args.save_model_epochs,
         seed=args.seed,
         workers=args.workers,
-        device=args.device,
+        # device=args.device,
         generator_seed=args.generator_seed,
         contour_guided=args.contour_guided,
         contour_channel_mode=args.contour_channel_mode,
         conditional=args.conditional,
     )
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print('running on {}'.format(device))
+
     if args.output_dir is not None:
         config.output_dir = args.output_dir
     else:
@@ -128,7 +132,9 @@ def main(args):
             "UpBlock2D"
           ),
     )
-    model.to(config.device)
+    # model.to(config.device)
+    model = nn.DataParallel(model)
+    model.to(device)
 
     ### Load optimizer and scheduler
     optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
@@ -148,7 +154,7 @@ def main(args):
         
         for step, batch in enumerate(train_dataloader):
             clean_images = batch["images"]
-            clean_images = clean_images.to(config.device)
+            clean_images = clean_images.to(device)
             
             ## Sample noise to add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
@@ -163,7 +169,7 @@ def main(args):
 
             ### Add contours to guide the reverse process
             if config.contour_guided:
-                noisy_images = add_contours_to_noise(noisy_images, batch, config, config.device)
+                noisy_images = add_contours_to_noise(noisy_images, batch, config, device)
                 
             noise_pred = model(noisy_images, timesteps, return_dict=False)[0]
             
@@ -184,9 +190,9 @@ def main(args):
         ### Initialize the ContourDiff Pipeline
         ### Modified from diffusers.DDPMPipeline and diffusers.DDIMPipeline
         if config.model_type == "ddpm":
-            pipeline = ContourDiffDDPMPipeline(unet=model, scheduler=noise_scheduler, data_loader=val_dataloader, external_config=config)
+            pipeline = ContourDiffDDPMPipeline(unet=model.module, scheduler=noise_scheduler, data_loader=val_dataloader, external_config=config)
         elif config.model_type == "ddim":
-            pipeline = ContourDiffDDIMPipeline(unet=model, scheduler=noise_scheduler, data_loader=val_dataloader, external_config=config)
+            pipeline = ContourDiffDDIMPipeline(unet=model.module, scheduler=noise_scheduler, data_loader=val_dataloader, external_config=config)
 
         ### Evaluate using contours generated from input_domain images
         model.eval()
@@ -225,7 +231,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_dir', type=str, default=None, help="directory to save the output samples and checkpoints. If not specified, it will use the default name as ContourDiff-{input_domain}-{output_domain}-{model_type}-{dataset}")
     parser.add_argument('--seed', type=int, default=0, help="seeds for random noise generator")
     parser.add_argument('--workers', type=int, default=0, help="number of workers")
-    parser.add_argument('--device', type=str, default="cuda:0", help="gpu to use")
+    # parser.add_argument('--device', type=str, default="cuda:0", help="gpu to use")
     parser.add_argument('--generator_seed', type=int, default=42, help="seed to ensure identical transformation applying to images and contours")
     parser.add_argument('--contour_guided', action='store_true', help="enable contour guided diffusion if specified")
     parser.add_argument('--contour_channel_mode', type=str, default="single", help="number of channels for the contour")

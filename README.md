@@ -96,7 +96,7 @@ To visualize the extracted contours, run `contour_checker.ipynb`.
 ## 2) Training Phase
 To train your own ContourDiff model, run command:
 ```bash
-python train.py \
+CUDA_VISIBLE_DEVICES=0,1,2 python3 train.py \
   --input_domain {INPUT_DOMAIN} \
   --output_domain {OUTPUT_DOMAIN} \
   --data_directory {DATA_DIRECTORY} \
@@ -107,7 +107,6 @@ python train.py \
   --input_domain_meta_path {INPUT_DOMAIN_META_PATH} \
   --output_domain_meta_path {OUTPUT_DOMAIN_META_PATH} \
   --output_dir {OUTPUT_DIR}
-  --device {DEVICE} \
   --contour_guided \
 
 ```
@@ -122,7 +121,6 @@ where:
 - `INPUT_DOMAIN_META_PATH` is path (*.csv) to input domain meta file under `DATA_DIRECTORY`
 - `OUTPUT_DOMAIN_META_PATH` is path (*.csv) to output domain meta file under `DATA_DIRECTORY`
 - `OUTPUT_DIR` is absolute path to save output results, including model checkpoints and visualization samples
-- `DEVICE` is GPU device
 - `contour_guided` is flag to enable contour-guided mode for diffusion models
 
 Notice:
