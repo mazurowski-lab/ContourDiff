@@ -5,7 +5,7 @@ Contour-Guided Diffusion Models for Unpaired Image-to-Image Translation
 
 #### By [Yuwen Chen](https://scholar.google.com/citations?user=61s49p0AAAAJ&hl=en), [Nicholas Konz](https://nickk124.github.io/), [Hanxue Gu](https://scholar.google.com/citations?user=aGjCpQUAAAAJ&hl=en), [Haoyu Dong](https://scholar.google.com/citations?user=eZVEUCIAAAAJ&hl=en), [Yaqian Chen](https://scholar.google.com/citations?user=iegKFuQAAAAJ&hl=en), [Lin Li](https://orcid.org/0009-0009-5433-6777), [Jisoo Lee](https://scholar.google.com/citations?user=6klcF3MAAAAJ) and [Maciej Mazurowski](https://sites.duke.edu/mazurowski/)
 
-![image](./figures/pipeline.png)
+![image](./figures/contourdiff_pipeline.png)
 
 This is the code for our paper [**ContourDiff: Unpaired Image Translation with Contour-Guided Diffusion Models**](https://arxiv.org/abs/2403.10786), which is a novel framework that leverages domain-invariant anatomical contour representations of images to enable unpaired translation between different domains.
 
@@ -14,7 +14,7 @@ Our method can:
 1. Enforce precise anatomical consistency even between modelaities with severe structural biases (See example figure below)
 2. Potentially translate images from arbitrary unseen input domains (i.e., train once, translate any)
 
-![image](./figures/result.png)
+![image](./figures/contourdiff_result.png)
 
 Great thanks to [Segmentation-guided Diffusion](https://github.com/mazurowski-lab/segmentation-guided-diffusion/tree/main) for inspiration and code backbone!
 
@@ -167,3 +167,6 @@ Notice:
 1. `VOLUME_SPECIFIER` and `SLICE_SPECIFIER` are required to enable `by_volume` translation, which means the meta file should include corresponding columns.
 2. `NUM_PARTITION` and `PARTITION` are aimed for translation in parallel.
 3. `PARTITION` is within range [0, `NUM_PARTITION` - 1].
+
+## License
+All codes in this repository are under [Apache 2.0](./LICENSE).
