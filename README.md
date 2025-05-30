@@ -110,6 +110,8 @@ CUDA_VISIBLE_DEVICES=0,1,2 python3 train.py \
   --output_domain_meta_path {OUTPUT_DOMAIN_META_PATH} \
   --output_dir {OUTPUT_DIR}
   --contour_guided \
+  --near_guided \
+  --near_guided_ratio {NEAR_GUIDED_RATIO}
 
 ```
 where:
@@ -124,14 +126,16 @@ where:
 - `OUTPUT_DOMAIN_META_PATH` is path (*.csv) to output domain meta file under `DATA_DIRECTORY`
 - `OUTPUT_DIR` is absolute path to save output results, including model checkpoints and visualization samples
 - `contour_guided` is flag to enable contour-guided mode for diffusion models
+- `near_guided` is flag to enable adjacent-slice guided mode
+- `near_guided_ratio` is the ratio to provide adjacent slice
 
 Notice:
 Input domain images and contours are used for validation in the training phase.
 
 ## 3) Translation Phase
-To translate input domain images using your own ContourDiff model, run command:
+To translate input domain images using your own ContourDiff model in 2D setting, run command:
 ```bash
-python translation.py \
+python translation_2d.py \
   --input_domain {INPUT_DOMAIN} \
   --output_domain {OUTPUT_DOMAIN} \
   --data_directory {DATA_DIRECTORY} \
@@ -164,6 +168,46 @@ where:
 - `DEVICE` is GPU device
 - `NUM_PARTITION` is total number of partition to split input domain units (either slices or volumes)
 - `PARTITION` is specified partition to translate
+
+To translate input domain images using your own ContourDiff model in 3D setting, run command:
+```bash
+python translation_3d.py \
+  --input_domain {INPUT_DOMAIN} \
+  --output_domain {OUTPUT_DOMAIN} \
+  --data_directory {DATA_DIRECTORY} \
+  --input_domain_contour_folder {INPUT_DOMAIN_CONTOUR_FOLDER} \
+  --input_domain_meta_path {INPUT_DOMAIN_META_PATH} \
+  --num_copy {NUM_COPY} \
+  --by_volume \
+  --volume_specifier {VOLUME_SPECIFIER} \
+  --slice_specifier {SLICE_SPECIFIER} \
+  --selected_epoch {SELECTED_EPOCH} \
+  --translating_folder_name {TRANSLATING_FOLDER_NAME} \
+  --device {DEVICE} \
+  --num_partition {NUM_PARTITION} \
+  --partition {PARTITION} \
+  --near_guided \
+  --num_copy {NUM_COPY}
+
+```
+where:
+- `INPUT_DOMAIN` is the string name of the input domain (e.g. any, CT or MRI)
+- `OUTPUT_DOMAIN` is the string name of the output domain (e.g. CT or MRI)
+- `DATA_DIRECTORY` is directory of data from multiple domains
+- `INPUT_DOMAIN_CONTOUR_FOLDER` is path to input domain contours under `DATA_DIRECTORY`
+- `INPUT_DOMAIN_META_PATH` is path (*.csv) to input domain meta file under `DATA_DIRECTORY`
+- `OUTPUT_DIR` is absolute path to save output results, including model checkpoints and visualization samples
+- `NUM_COPY` is the number of samples generated in each iteration
+- `by_volume` is flag to enable slice-by-slice generation within each volume
+- `VOLUME_SPECIFIER` is string of column to indicate each volume (e.g., "volume")
+- `SLICE_SPECIFIER` is string of column to indicate slice number (e.g., "slice")
+- `SELECTED_EPOCH` is epoch of the selected checkpoint to load
+- `TRANSLATING_FOLDER_NAME` is absolute path to store the tranlsated images
+- `DEVICE` is GPU device
+- `NUM_PARTITION` is total number of partition to split input domain units (either slices or volumes)
+- `PARTITION` is specified partition to translate
+- `near_guided` is flag to enable adjacent-slice guided mode
+- `num_copy` is the number of candidates for initial slice generation
 
 Notice:
 1. `VOLUME_SPECIFIER` and `SLICE_SPECIFIER` are required to enable `by_volume` translation, which means the meta file should include corresponding columns.
