@@ -5,16 +5,17 @@ Contour-Guided Diffusion Models for Unpaired Image-to-Image Translation
 
 #### By [Yuwen Chen](https://scholar.google.com/citations?user=61s49p0AAAAJ&hl=en), [Nicholas Konz](https://nickk124.github.io/), [Hanxue Gu](https://scholar.google.com/citations?user=aGjCpQUAAAAJ&hl=en), [Haoyu Dong](https://scholar.google.com/citations?user=eZVEUCIAAAAJ&hl=en), [Yaqian Chen](https://scholar.google.com/citations?user=iegKFuQAAAAJ&hl=en), [Lin Li](https://orcid.org/0009-0009-5433-6777), [Jisoo Lee](https://scholar.google.com/citations?user=6klcF3MAAAAJ) and [Maciej Mazurowski](https://sites.duke.edu/mazurowski/)
 
-![image](./figures/contourdiff_pipeline.png)
+![image](./assets/contourdiff_pipeline.png)
+![image](./assets/SCGD_pipeline.png.png)
 
-This is the code for our paper [**ContourDiff: Unpaired Image Translation with Contour-Guided Diffusion Models**](https://arxiv.org/abs/2403.10786), which is a novel framework that leverages domain-invariant anatomical contour representations of images to enable unpaired translation between different domains.
+This is the code for our paper [**ContourDiff: Unpaired Medical Image Translation with Structural Consistency**](https://arxiv.org/abs/2403.10786), which is a novel framework that leverages domain-invariant anatomical contour representations of images to enable unpaired translation between different domains.
 
 ### Why use our model?
 Our method can:
 1. Enforce precise anatomical consistency even between modelaities with severe structural biases (See example figure below)
 2. Potentially translate images from arbitrary unseen input domains (i.e., train once, translate any)
 
-![image](./figures/contourdiff_result.png)
+![image](./assets/translation_figure.png)
 
 Great thanks to [Segmentation-guided Diffusion](https://github.com/mazurowski-lab/segmentation-guided-diffusion/tree/main) for inspiration and code backbone!
 

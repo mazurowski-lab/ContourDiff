@@ -68,10 +68,26 @@ def add_contours_to_noise(noisy_images, data_batch, config, device, num_copy=1, 
         if num_copy > 1:
             contour = torch.cat([contour] * num_copy, dim=0)
         contour = contour.to(device)
-    else:
-        raise NotImplementedError("Multi-channel map is not implemented")
+        noisy_images = torch.cat((noisy_images, contour), dim=1)
 
-    noisy_images = torch.cat((noisy_images, contour), dim=1)
+    elif config.contour_channel_mode == "multi":
+        if translation:
+            contour = data_batch
+        else:
+            contour = data_batch["contours"]
+        
+        if config.near_guided:
+            near_img = data_batch["near_images"]
+
+        if num_copy > 1:
+            contour = torch.cat([contour] * num_copy, dim=0)
+            near_img = torch.cat([near_img] * num_copy, dim=0)
+
+        contour = contour.to(device)
+        near_img = near_img.to(device)
+        noisy_images = torch.cat((noisy_images, contour, near_img), dim=1)
+    else:
+        raise NotImplementedError("Options not implemented!")
     
     return noisy_images
 
@@ -177,3 +193,7 @@ def evaluate(config, epoch, pipeline, noise_step=1000, conditional=False, contou
         contour_ori = data_batch["contours"]
         save_image(img_ori, f"{test_dir}/{epoch:04d}_ori.png", normalize=True, nrow=cols)
         save_image(contour_ori, f"{test_dir}/{epoch:04d}_contour.png", normalize=True, nrow=cols)
+
+        if config.near_guided:
+            near_img_ori = data_batch["near_images"]
+            save_image(near_img_ori, f"{test_dir}/{epoch:04d}_near_ori.png", normalize=True, nrow=cols)

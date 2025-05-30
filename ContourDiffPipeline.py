@@ -45,6 +45,10 @@ class ContourDiffDDPMPipeline(DiffusionPipeline):
         if self.external_config.contour_channel_mode == "single":
             img_channel = self.unet.config.in_channels - 1
         
+        if self.external_config.contour_channel_mode == "multi":
+            if self.external_config.near_guided:
+                img_channel = self.unet.config.in_channels - 2
+        
         if self.external_config.eval_batch_size is not None:
             batch_size = self.external_config.eval_batch_size
         
@@ -149,6 +153,10 @@ class ContourDiffDDIMPipeline(DiffusionPipeline):
         
         if self.external_config.contour_channel_mode == "single":
             img_channel = self.unet.config.in_channels - 1
+
+        if self.external_config.contour_channel_mode == "multi":
+            if self.external_config.near_guided:
+                img_channel = self.unet.config.in_channels - 2
         
         if self.external_config.eval_batch_size is not None:
             batch_size = self.external_config.eval_batch_size

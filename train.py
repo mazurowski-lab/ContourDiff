@@ -47,6 +47,8 @@ def main(args):
         contour_guided=args.contour_guided,
         contour_channel_mode=args.contour_channel_mode,
         conditional=args.conditional,
+        near_guided=args.near_guided,
+        near_guided_ratio=args.near_guided_ratio
     )
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -106,8 +108,11 @@ def main(args):
     if config.contour_guided:
         if config.contour_channel_mode == "single":
             model_in_channels = config.in_channels + 1
+        elif config.contour_channel_mode == "multi":
+            if config.near_guided:
+                model_in_channels = config.in_channels + 2
         else:
-            raise NotImplementedError("Multi-channel map is not implemented")
+            raise NotImplementedError("Options not implemented!")
 
     model = UNet2DModel(
         sample_size=config.img_size,  # the target image resolution
@@ -247,6 +252,8 @@ if __name__ == "__main__":
     parser.add_argument('--input_domain_meta_path', type=str, required=True, help="path of input domain meta under data_directory")
     parser.add_argument('--output_domain_meta_path', type=str, required=True, help="path of output domain meta under data_directory")
     parser.add_argument('--in_channels', type=int, default=1, help="name of the channels for input image")
+    parser.add_argument("--near_guided", action="store_true", help="enable guidance from adjacent slice")
+    parser.add_argument("--near_guided_ratio", type=int, default=0.2, help="probability to add adjacent slice guidance")
 
     args = parser.parse_args()
 
