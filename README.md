@@ -133,6 +133,7 @@ Notice:
 Input domain images and contours are used for validation in the training phase.
 
 ## 3) Translation Phase
+### 2D Setting
 To translate input domain images using your own ContourDiff model in 2D setting, run command:
 ```bash
 python translation_2d.py \
@@ -169,6 +170,7 @@ where:
 - `NUM_PARTITION` is total number of partition to split input domain units (either slices or volumes)
 - `PARTITION` is specified partition to translate
 
+### 3D Setting
 To translate input domain images using your own ContourDiff model in 3D setting, run command:
 ```bash
 python translation_3d.py \
